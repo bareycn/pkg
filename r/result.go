@@ -1,5 +1,9 @@
 package r
 
+import (
+	"github.com/bareycn/pkg/validate"
+)
+
 func OK() map[string]interface{} {
 	return map[string]interface{}{
 		"code": 0,
@@ -23,21 +27,19 @@ func OKWithMsg(msg string) map[string]interface{} {
 }
 
 func Error(err error) map[string]interface{} {
+	if errs := validate.Error(err); errs != nil {
+		return map[string]interface{}{
+			"error": errs.Error(),
+		}
+	}
 	return map[string]interface{}{
-		"msg": err.Error(),
+		"error": err.Error(),
 	}
 }
 
-func ErrorWithMsg(msg string) map[string]interface{} {
-	return map[string]interface{}{
-		"code": 1,
-		"msg":  msg,
-	}
-}
-
-func ErrorWithCode(code int, err error) map[string]interface{} {
+func ErrorWithCode(code int, err string) map[string]interface{} {
 	return map[string]interface{}{
 		"code":  code,
-		"error": err.Error(),
+		"error": err,
 	}
 }

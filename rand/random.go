@@ -1,6 +1,8 @@
 package rand
 
 import (
+	crypto "crypto/rand"
+	"encoding/base64"
 	"math/rand"
 )
 
@@ -35,6 +37,15 @@ func Upper(length int) string {
 // Letter 生成指定长度的随机字母字符串
 func Letter(length int) string {
 	return Generate(length, letter)
+}
+
+func Nonce(length int) string {
+	b := make([]byte, 16)
+	_, err := crypto.Read(b)
+	if err != nil {
+		return ""
+	}
+	return base64.URLEncoding.EncodeToString(b)
 }
 
 // Generate 生成指定长度的随机数字字符串
