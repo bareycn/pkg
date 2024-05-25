@@ -37,6 +37,12 @@ func Error(err error) map[string]interface{} {
 	}
 }
 
+func ErrorWithMsg(msg string) map[string]interface{} {
+	return map[string]interface{}{
+		"error": msg,
+	}
+}
+
 func ErrorWithCode(code int, err string) map[string]interface{} {
 	return map[string]interface{}{
 		"code":  code,

@@ -1,6 +1,9 @@
 package sms
 
-import "errors"
+import (
+	"errors"
+	"log"
+)
 
 type Configuration struct {
 	Type   string               `mapstructure:"type"`
@@ -9,13 +12,20 @@ type Configuration struct {
 
 type Sms interface {
 	Send(phone, signName, template string, data map[string]interface{}) error
+	SendTemplate(phone, signName, template string, data map[string]interface{}) error
 }
 
-func New(config Configuration) (Sms, error) {
+var smsProvider Sms
+
+func New(config Configuration) {
 	switch config.Type {
 	case "aliyun":
-		return NewAliyun(config.Aliyun)
+		smsProvider = NewAliyun(config.Aliyun)
 	default:
-		return nil, errors.New("未知的短信服务提供者")
+		log.Panicln(errors.New("未知短信服务商"))
 	}
+}
+
+func Client() Sms {
+	return smsProvider
 }

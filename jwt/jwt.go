@@ -41,6 +41,15 @@ func GenerateAccessToken(userID int64) (string, error) {
 	return token.SignedString([]byte(conf.Secret))
 }
 
+// GetUserID 获取用户ID
+func GetUserID(c *gin.Context) int64 {
+	userID, err := strconv.ParseInt(c.MustGet(ContextUserID).(string), 10, 64)
+	if err != nil {
+		panic(err)
+	}
+	return userID
+}
+
 // Auth jwt中间件
 func Auth() gin.HandlerFunc {
 	return func(c *gin.Context) {
