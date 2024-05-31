@@ -7,6 +7,7 @@ import (
 	"github.com/alibabacloud-go/tea/tea"
 	vod "github.com/alibabacloud-go/vod-20170321/v3/client"
 	"github.com/aliyun/aliyun-oss-go-sdk/oss"
+	"github.com/google/uuid"
 	"io"
 	"log"
 	"mime/multipart"
@@ -90,15 +91,20 @@ func uploadOss(auth *UploadAuth, address *UploadAddress, reader io.Reader) error
 	return nil
 }
 
-func UploadVideo(file *multipart.FileHeader) (string, string, error) {
+func UploadVideo(file *multipart.FileHeader) (fileName string, mediaID string, err error) {
 	src, err := file.Open()
 	if err != nil {
 		return "", "", err
 	}
 	defer src.Close()
 
+	title := filepath.Base(file.Filename)
+	if len(title) >= 128 {
+		title = uuid.New().String()
+	}
+
 	requestUploadVideo := &vod.CreateUploadVideoRequest{
-		Title:           tea.String(filepath.Base(file.Filename)),
+		Title:           tea.String(title),
 		FileName:        tea.String(file.Filename),
 		TemplateGroupId: config.TemplateGroupId,
 		WorkflowId:      config.WorkflowId,
