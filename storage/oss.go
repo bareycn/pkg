@@ -39,6 +39,17 @@ func NewOss(conf OssConfiguration) Storage {
 	}
 }
 
+// PutFileKey 上传文件
+func (o *OssProvider) PutFileKey(key string, file *multipart.FileHeader) (string, error) {
+	src, err := file.Open()
+	if err != nil {
+		return "", err
+	}
+	defer src.Close()
+	err = o.bucket.PutObject(key, src)
+	return key, err
+}
+
 // PutFile 上传文件
 func (o *OssProvider) PutFile(path string, file *multipart.FileHeader) (string, error) {
 	src, err := file.Open()

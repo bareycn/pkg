@@ -7,6 +7,7 @@ import (
 )
 
 type Storage interface {
+	PutFileKey(key string, file *multipart.FileHeader) (string, error)
 	PutFile(path string, file *multipart.FileHeader) (string, error)
 	PutObject(key string, reader io.Reader) (string, error)
 }
