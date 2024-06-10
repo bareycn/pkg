@@ -141,13 +141,14 @@ func GetPlayInfo(videoId string) (coverUrl string, videoUrl string, err error) {
 }
 
 // GetVideoPlayAuth 点播播放凭证
-func GetVideoPlayAuth(videoId string) (string, error) {
+func GetVideoPlayAuth(videoId string) (playAuth string, coverUrl string, err error) {
 	requestGetVideoPlayAuth := &vod.GetVideoPlayAuthRequest{
-		VideoId: tea.String(videoId),
+		VideoId:         tea.String(videoId),
+		AuthInfoTimeout: tea.Int64(60 * 60),
 	}
 	response, err := client.GetVideoPlayAuth(requestGetVideoPlayAuth)
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
-	return tea.StringValue(response.Body.PlayAuth), nil
+	return tea.StringValue(response.Body.PlayAuth), tea.StringValue(response.Body.VideoMeta.CoverURL), nil
 }
