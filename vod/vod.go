@@ -91,21 +91,15 @@ func uploadOss(auth *UploadAuth, address *UploadAddress, reader io.Reader) error
 	return nil
 }
 
-func UploadVideo(file *multipart.FileHeader) (fileName string, mediaID string, err error) {
-	src, err := file.Open()
-	if err != nil {
-		return "", "", err
-	}
-	defer src.Close()
-
-	title := filepath.Base(file.Filename)
+func UploadVideo(filename string, file multipart.File) (fileName string, mediaID string, err error) {
+	title := filepath.Base(filename)
 	if len(title) >= 128 {
 		title = uuid.New().String()
 	}
 
 	requestUploadVideo := &vod.CreateUploadVideoRequest{
 		Title:           tea.String(title),
-		FileName:        tea.String(file.Filename),
+		FileName:        tea.String(filename),
 		TemplateGroupId: config.TemplateGroupId,
 		WorkflowId:      config.WorkflowId,
 	}
@@ -117,8 +111,7 @@ func UploadVideo(file *multipart.FileHeader) (fileName string, mediaID string, e
 	if err != nil {
 		log.Panicln(err)
 	}
-	log.Println(auth, address, err)
-	err = uploadOss(auth, address, src)
+	err = uploadOss(auth, address, file)
 	if err != nil {
 		return "", "", err
 	}
